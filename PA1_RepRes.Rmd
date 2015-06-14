@@ -1,0 +1,74 @@
+#Reproducible Research - Peer Assignment 1
+````{r echo=TRUE}
+library(ggplot2)
+require(stats)
+```
+
+##Load the Activity Data
+```{r Data Load, echo =TRUE}
+fileURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(fileURL, "./repdata-data-activity.zip", method = "curl" )
+unzip("./repdata-data-activity.zip")
+
+fdata<-read.csv("./activity.csv", header = TRUE, sep = ",")
+```
+
+##Mean and Median Of Steps per Day
+
+###Steps taken per day
+```{r Mean and Median, echo=TRUE}
+stepsbyday <- aggregate(fdata[,1], by = list(fdata$date), FUN = sum, na.rm = TRUE)
+colnames(stepsbyday) <- cbind("day","stepcount")
+stepsbyday
+
+hist(stepsbyday$stepcount, ylim = c(0,15), breaks = 50, xlab = "Step Count", main = "Histogram Of StepCount")
+
+```
+
+
+###Mean Step Count by Day
+```{r}
+meanstepsbyday <- aggregate(fdata[,1], by = list(fdata$date), FUN = mean, na.action = na.omit)
+
+meanstepsbyday
+```
+###Mean
+
+```{r }
+mean(stepsbyday$stepcount, na.rm =T)
+
+```
+
+###Median Step Count by Day
+
+```{r}
+#medianstepsbyday <- tapply(fdata$steps, fdata$date, median, na.rm = T)
+#medianstepsbyday
+
+```
+
+###Median
+```{r}
+median(stepsbyday$stepcount, na.rm =T)
+
+```
+
+##Average Daily Activity Pattern
+```{r, echo=TRUE}
+stepsMeanPerInt <- tapply(fdata$steps, fdata$interval, mean, na.rm = T)
+plot(stepsMeanPerInt, type = "l", main = ("Steps vs. Interval (daily average)"), ylab = "# of steps")
+```
+
+##Imputing Missing Values
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r Missing Data, echo=TRUE}
+MissingDataCount <- sum(as.numeric(is.na(fdata$steps)))
+```
+Missing Data Count  = `r MissingDataCount`.
+
